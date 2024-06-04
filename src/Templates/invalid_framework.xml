@@ -1,0 +1,7 @@
+<configuration>
+    <framework>
+        <name></name>
+        <target>/mnt/c/Users/lukem/OneDrive/Documents/Computer Science Year 4/Computer Science Project/test_framework</target>
+        <description>This framework will be used to test the danske bank application</description>
+    </framework>
+</configuration>

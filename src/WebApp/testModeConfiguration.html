@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>UniFrame Test Mode Configuration</title>
+        <link rel="stylesheet" href="css/UniFrame.css">
+        <style>
+            .configuration_form h4 {
+                padding-top: 20px;
+                padding-bottom: 15px;
+            }
+            input[type="text"] {
+                width: 400px;
+
+            }
+        </style>
+    </head>
+    <body>
+        <div class="toolbar">
+            <span class="logo">UniFrame</span>
+            <ul>
+                <li><a href="#">Notifications</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar">
+            <div class="profile-container">
+                <h5>Luke Millar</h5>
+                <hr>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" id="frameworks-link">Back</a></li>
+            </ul>
+
+        </div>
+
+        <div class="content">
+            <h4>Update through Configuration File (XML)</h4>
+            <input type="file" id="configFile" name="configFile">
+            <button onclick="uploadFile()" style="margin-top: 1rem;">Upload</button>
+            <div id="uploadResponse"></div>
+            <div class="configuration_form">
+                <h4>Configuration Form</h4>
+            <form name="configuration_form">
+                <label for="name">Name</label><br>
+                <input type="text" id="name" name="name"><br>
+                <label for="target_directory">Host IP Address ('localhost' for local)</label><br>
+                <input type="text" id="host_ip_address" name="host_ip_address"><br>
+                <label for="ssh_username">SSH Username</label><br>
+                <input type="text" id="ssh_username" name="ssh_username"><br>
+                <label for="rsa_key_path">RSA Key File Path</label><br>
+                <input type="text" id="rsa_key_path" name="rsa_key_path"><br>
+                <label for="test_environment_path">Test Environment Path</label><br>
+                <input type="text" id="test_environment_path" name="test_environment_path"><br>
+                <label for="python_dependencies_file_path">Python Dependencies File Path</label><br>
+                <input type="text" id="python_dependencies_file_path" name="python_dependencies_file_path"><br>
+                <label for="environment_variables_file_path">Environment Variables File Path</label><br>
+                <input type="text" id="environment_variables_file_path" name="environment_variables_file_path"><br>
+                <label for="test_runner">Test Runner</label><br>
+                <input type="text" id="test_runner" name="test_runner"><br>
+                <label for="init_file_path">Initialisation File Path</label><br>
+                <input type="text" id="init_file_path" name="init_file_path"><br>
+                <button onclick="updateConfiguration()" style="margin-top: 1rem;">Save</button>
+                <div id="formResponse"></div>
+            </form>
+            </div>
+        </div>
+        <script>
+    function populateForm(test_mode) {
+        document.getElementById('name').value = test_mode.test_mode_name;
+        document.getElementById('host_ip_address').value = test_mode.test_mode_host;
+        document.getElementById('ssh_username').value = test_mode.test_mode_username;
+        document.getElementById('rsa_key_path').value = test_mode.test_mode_key_path;
+        document.getElementById('test_environment_path').value = test_mode.test_mode_test_path;
+        document.getElementById('python_dependencies_file_path').value = test_mode.test_mode_requirements_path;
+        document.getElementById('environment_variables_file_path').value = test_mode.test_mode_env_vars_path;
+        document.getElementById('test_runner').value = test_mode.test_runner;
+        document.getElementById('init_file_path').value = test_mode.init_file_path;
+    }
+    function getTestModeDetails() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const test_mode_id = urlParams.get('id');
+        const content = document.getElementById('content');
+        if (test_mode_id) {
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+        if(this.readyState == 4 && this.status == 200) {
+                try {
+                    test_mode_details = JSON.parse(this.response).test_mode;
+                    console.log(test_mode_details)
+                    populateForm(test_mode_details);
+                } catch (e) {
+                    document.getElementById('content').innerText = 'Error: invalid reponse from the server';
+                }
+            } else if (this.readyState == 4) {
+                document.getElementById('content').innerText = 'An unexpected Server error occured';
+            }
+        };
+        xhttp.open("GET", `http://localhost:5000/test_mode/load_test_mode?test_mode_id=${test_mode_id}`, true);
+        xhttp.send();
+        } else {
+        content.innerHTML = "<p>Error: Could not get test mode ID</p>";
+        }
+    }
+
+    function uploadFile() {
+            document.getElementById("uploadResponse").innerText = "Test Mode updated!";
+        }
+        async function uploadFile() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const test_mode_id = urlParams.get('id');
+            const fileInput = document.getElementById('configFile');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                document.getElementById("uploadResponse").innerText = "No file selected!";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('configFile', file);
+            formData.append('test_mode_id', test_mode_id);
+
+            try {
+                const response = await fetch(`http://localhost:5000/framework/update_test_mode`, {
+                    method: 'POST',
+                    body: formData,
+            });
+
+            if (response.ok) {
+                const result = await response.text();
+                document.getElementById("uploadResponse").innerText = result;
+            } else {
+                throw new Error('Failed to upload file')
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById("uploadResponse").innerText = "Upload Failed!";
+ 
+        }
+    }
+
+    function updateConfiguration() {
+            event.preventDefault()
+            const urlParams = new URLSearchParams(window.location.search);
+            const test_mode_id = urlParams.get('id');
+            let name = document.forms["configuration_form"]["name"].value;
+            let host_ip_address = document.forms["configuration_form"]["host_ip_address"].value;
+            let username = document.forms["configuration_form"]["ssh_username"].value;
+            let rsa_key_path = document.forms["configuration_form"]["rsa_key_path"].value;
+            let test_path = document.forms["configuration_form"]["test_environment_path"].value;
+            let python_dependencies_file_path = document.forms["configuration_form"]["python_dependencies_file_path"].value;
+            let environment_variables = document.forms["configuration_form"]["environment_variables_file_path"].value;
+            let test_runner = document.forms["configuration_form"]["test_runner"].value;
+            let init_file_path = document.forms["configuration_form"]["init_file_path"].value;
+            
+            const url = 'http://localhost:5000/framework/update_test_mode';
+            const data = {
+                test_mode_id: test_mode_id,
+                name: name,
+                host_ip_address: host_ip_address,
+                username: username,
+                rsa_key_path: rsa_key_path,
+                test_path: test_path,
+                python_dependencies_file_path: python_dependencies_file_path,
+                environment_variables: environment_variables,
+                test_runner: test_runner,
+                init_file_path: init_file_path
+            };
+
+            console.log(data)
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+    }
+    function loadPage(page) {
+        window.location.href = page;
+    }
+
+    window.onload = getTestModeDetails
+
+        </script>
+    </body>
+</html>

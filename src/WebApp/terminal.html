@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashboard</title>
+        <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+        <style>
+            #output {
+                white-space: pre-wrap;
+                padding: 10px;
+                border: 1px solid #ddd;
+                margin: 10px 0px;
+                height: 800px;
+                overflow-y: scroll;
+            }
+            #content {
+                margin-left: 200px;
+                padding: 1rem;
+                padding-top: 60px;
+            }
+            #test-output-header {
+                margin-bottom: 50px;
+            }
+            body, h1, h2, h3, h4, h5, h6 {
+                margin: 0;
+                font-family: 'Raleway', sans-serif;
+            }
+            body {
+                background-color: #f5f5f5;
+            }
+
+            .toolbar {
+                background-color: #0056b3;
+                color: white;
+                padding: 0.5rem 1rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: fixed;
+                width: 100%;
+                top: 0;
+                z-index: 2;
+            }
+
+            .toolbar .logo {
+                font-size:  1.5rem;
+                font-weight: bold;
+                color: white;
+            }
+
+            .toolbar .logo, .toolbar ul {
+                flex: 1;
+                display: flex;
+                align-items: center;
+            }
+
+            .toolbar ul {
+                list-style-type: none;
+                display: flex;
+                padding: 0;
+                margin: 0;
+                justify-content: flex-end;
+                gap: 0.5rem;
+                padding-right: 2rem;
+            }
+
+            .toolbar ul li a {
+                color: white;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+            .sidebar {
+                background-color: #e3f2fd;
+                color: #333;
+                padding: 1rem;
+                padding-top: 60px;
+                height: 100vh;
+                width: 200px;
+                position: fixed;
+                top: 0;
+                left: 0;
+                overflow-y: auto;
+            }
+            .sidebar h5 {
+                margin-bottom: 1rem;
+            }
+            .profile-container h5{
+                margin-bottom: 0.5rem;
+            }
+            hr {
+                border:0;
+                height: 1px;
+                background-color: #ccc;
+                margin-top: 0.5rem;
+                margin-bottom: 1rem;
+            }
+            .sidebar-menu {
+                list-style: none;
+                padding-left: 0;
+                margin-top: 0;
+            }
+            .sidebar-menu li:first-child a {
+                padding-top: 0;
+                margin-top: 0;
+            }
+            .sidebar-menu li a {
+                text-decoration: none;
+                color: #0366d6;
+                padding: 0.5rem 0;
+                display: block;
+            }
+            .sidebar-menu li a.active, .sidebar-menu li a:hover {
+                background-color: #bbdefb;
+            }
+
+            #content {
+                box-sizing: border-box;
+                margin-left: 300px;
+                padding: 1rem;
+                padding-top: 60px;
+                position: relative;
+                z-index: 1;
+            }
+
+            .content-header {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .profile-container {
+                padding-bottom: 1rem;
+            }
+            .sidebar h5 {
+                color: #0366d6;
+                margin-bottom: 0.5rem;
+                font-size: 1.2rem;
+            }
+            hr {
+                border: 0;
+                height: 1px;
+                background-color: #ccc;
+                margin-bottom: 1rem;
+            }
+
+            .test-suite-item, .test-mode-item {
+                background-color: #ffffff;
+                border: 1px solid #ddd;
+                padding: 0.5rem;
+                margin-bottom: 0.5rem;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                transition: background-color 0.3s ease;
+            }
+
+            .test-suite-item:hover, .test-mode-item:hover {
+                background-color: #e3f2fd;
+            }
+
+            .test-suite-id, .test-mode-id, .test-suite-name, .test-mode-name {
+                margin-right: 1rem;
+            }
+
+
+            .framework-button {
+                padding: 0.3rem 0.6rem;
+                background-color: #2196f3;
+                color: #ffffff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer
+            }
+
+            .framework-button:hover {
+                background-color: #1976d2;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="toolbar">
+            <span class="logo">UniFrame</span>
+            <ul>
+                <li><a href="#">Notifications</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar">
+            <div class="profile-container">
+                <h5>Luke Millar</h5>
+                <hr>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" onclick="backToDashboard()">Back</a></li>
+            </ul>
+
+        </div>
+
+        <div id="content">
+        <h2 id="test-output-header">Test Output</h2>
+        <div id="output"></div>
+        </div>
+
+        <script>
+            const outputElement = document.getElementById('output');
+
+            const socket = io('http://localhost:5000', {
+                reconnection: true,
+                reconnectionAttempts: Infinity,
+                reconnectionDelay: 1000,
+                reconnectionDelayMax: 5000,
+                randomizationFactor: 0.5
+            });
+
+            socket.on('connect', () => {
+                console.log('Connected to backend');
+            });
+            socket.on('test_output', (msg) => {
+                console.log(msg.data)
+                const message = document.createTextNode(msg.data + '\n');
+                outputElement.appendChild(message)
+                outputElement.scrollTop = outputElement.scrollHeight;
+            });
+
+            
+    function runTests() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const test_suite_names = urlParams.get('test_suite_names');
+        const test_mode_name = urlParams.get('test_mode_name');
+        const framework_name = urlParams.get('framework_name');
+        const url = 'http://localhost:5000/framework/run';
+        const data = {
+            framework_name: framework_name,
+            test_suites: test_suite_names,
+            test_mode_name: test_mode_name
+        };
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+
+    
+    function backToDashboard() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const framework_id = urlParams.get('framework_id');
+        window.location.href=`viewFrameworks.html?id=${framework_id}`
+
+    }
+
+    window.onload = runTests
+        </script>
+    </body>
+</html>

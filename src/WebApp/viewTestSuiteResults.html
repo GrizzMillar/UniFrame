@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>UniFrame Dashboard</title>
+        <style>
+            body, h1, h2, h3, h4, h5, h6 {
+                margin: 0;
+                font-family: 'Raleway', sans-serif;
+            }
+            body {
+                background-color: #f5f5f5;
+            }
+
+            .toolbar {
+                background-color: #0056b3;
+                color: white;
+                padding: 0.5rem 1rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: fixed;
+                width: 100%;
+                top: 0;
+                z-index: 2;
+            }
+
+            .toolbar .logo {
+                font-size:  1.5rem;
+                font-weight: bold;
+                color: white;
+            }
+
+            .toolbar .logo, .toolbar ul {
+                flex: 1;
+                display: flex;
+                align-items: center;
+            }
+
+            .toolbar ul {
+                list-style-type: none;
+                display: flex;
+                padding: 0;
+                margin: 0;
+                justify-content: flex-end;
+                gap: 0.5rem;
+                padding-right: 2rem;
+            }
+
+            .toolbar ul li a {
+                color: white;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+            .sidebar {
+                background-color: #e3f2fd;
+                color: #333;
+                padding: 1rem;
+                padding-top: 60px;
+                height: 100vh;
+                width: 200px;
+                position: fixed;
+                top: 0;
+                left: 0;
+                overflow-y: auto;
+            }
+            .sidebar h5 {
+                margin-bottom: 1rem;
+            }
+            .profile-container h5{
+                margin-bottom: 0.5rem;
+            }
+            hr {
+                border:0;
+                height: 1px;
+                background-color: #ccc;
+                margin-top: 0.5rem;
+                margin-bottom: 1rem;
+            }
+            .sidebar-menu {
+                list-style: none;
+                padding-left: 0;
+                margin-top: 0;
+            }
+            .sidebar-menu li:first-child a {
+                padding-top: 0;
+                margin-top: 0;
+            }
+            .sidebar-menu li a {
+                text-decoration: none;
+                color: #0366d6;
+                padding: 0.5rem 0;
+                display: block;
+            }
+            .sidebar-menu li a.active, .sidebar-menu li a:hover {
+                background-color: #bbdefb;
+            }
+
+            #content {
+                box-sizing: border-box;
+                margin-left: 300px;
+                padding: 1rem;
+                padding-top: 60px;
+                position: relative;
+                z-index: 1;
+            }
+
+            .content-header {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .profile-container {
+                padding-bottom: 1rem;
+            }
+            .sidebar h5 {
+                color: #0366d6;
+                margin-bottom: 0.5rem;
+                font-size: 1.2rem;
+            }
+            hr {
+                border: 0;
+                height: 1px;
+                background-color: #ccc;
+                margin-bottom: 1rem;
+            }
+
+            .test-suite-item {
+                background-color: #ffffff;
+                border: 1px solid #ddd;
+                padding: 0.5rem;
+                margin-bottom: 0.5rem;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                transition: background-color 0.3s ease;
+            }
+
+            .test-suite-item:hover {
+                background-color: #e3f2fd;
+            }
+
+            .test-suite-id, .test-suite-name {
+                margin-right: 1rem;
+            }
+
+
+            .framework-button {
+                padding: 0.3rem 0.6rem;
+                background-color: #2196f3;
+                color: #ffffff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer
+            }
+
+            .framework-button:hover {
+                background-color: #1976d2;
+            }
+
+            
+            .summary {
+                display: flex;
+                justify-content: space-between;
+                background-color: #0056b3;
+                padding: 10px;
+                color: #fff;
+            }
+
+            .summary > div {
+                text-align: center;
+            }
+
+            .summary h2 {
+                color: #fff;
+            }
+
+            .summary p {
+                margin: 5px 0;
+            }
+
+            table {
+                width: 100%;
+                table-layout: fixed;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+
+            table, th, td {
+                border: 1px solid #ddd;
+            }
+
+            th, td {
+                padding: 10px;
+                text-align: left;
+                width: 25%;
+            }
+
+            th {
+                background-color: #0056b3;
+                color: #fff;
+            }
+
+            td {
+                word-wrap: break-word;
+            }
+            
+            .report_title {
+                margin-top: 20px;
+                color: #0056b3;
+                font-family: 'Arial', sans-serif;
+                font-size: 28px;
+                letter-spacing: 1px;
+                padding-bottom: 10px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="toolbar">
+            <span class="logo">UniFrame</span>
+            <ul>
+                <li><a href="#">Notifications</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar">
+            <div class="profile-container">
+                <h5>Luke Millar</h5>
+                <hr>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" id="testsuites-link" onclick="backToViewTestSuite()">Back</a></li>
+            </ul>
+
+        </div>
+
+        <div id="content">
+    
+        </div>
+        <script>
+        var testSuiteResultDetails = {}
+           function displayTestSuiteResultDetails(test_suite_result) {
+            const output = document.getElementById('content');
+            try {
+            let report_date = new Date(test_suite_result.date);
+            let formatted_date = report_date.toLocaleString('en-UK', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                timeZoneName: 'short'
+            });
+            let content = `<h2 class="report_title">Test Suite Results - ${formatted_date}</h2>`
+            content += `<div class="summary"> <div><h2>${test_suite_result.passed}</h2><p>Total Passes</p> </div> <div><h2>${test_suite_result.failed}</h2><p>Total Failures</p> </div><div><h2>${test_suite_result.error}</h2><p>Total Errors</p></div><div><h2>${test_suite_result.execution_time}</h2><p>Execution Time</p></div></div>`; 
+            content += `<table><tbody><tr><th>Test Case</th><th>Status</th><th colspan="2">Error Messages</th><th>Execution Time</th></tr>`
+                    test_case_results = test_suite_result.test_results;
+                    test_case_results.forEach(test_case_result => {
+                        content += ` <tr><td>${test_case_result.test_result_name}</td><td>${test_case_result.test_result_status}</td><td colspan="2">${test_case_result.test_result_error_messages}</td><td>${test_case_result.test_result_execution_time}</td></tr>`;
+                    })
+                    
+                    coverage_results = test_suite_result.coverage_results
+                    content += `<tr><th>Function Coverage</th><th>Line Coverage</th><th>Branch Coverage</th><th>Covered Functions</th><th>Uncovered Functions</th></tr>`
+                    if (coverage_results.length == 0) {
+                        content +=` <tr><td>N/A</td><td>N/A</td><td>N/A</td><td>N/A</td><td>N/A</td></tr>`;
+                    } else { 
+                        coverage_results.forEach(coverage_result => {
+                        let covered_functions = "";
+                        let uncovered_functions = "";
+                        if (coverage_result.covered_functions == '[]') {
+                            covered_functions = "N/A"
+                        } else {
+                            covered_functions = JSON.parse(coverage_result.covered_functions).join(",");
+                        }
+
+                        if (coverage_result.uncovered_functions == '[]') {
+                            uncovered_functions = "N/A"
+                        } else {
+                            uncovered_functions = JSON.parse(coverage_result.uncovered_functions).join(",");
+                        }
+                            content +=` <tr><td>${coverage_result.function_coverage}</td><td>${coverage_result.line_coverage}</td><td>${coverage_result.branch_coverage}</td><td>${covered_functions}</td><td>${uncovered_functions}</td></tr>`;
+                        });
+                    }
+                    content += `</tbody></table>`
+            
+            output.innerHTML = content;
+        } catch (e) {
+            console.error(e);
+            document.getElementById('content').innerText = 'Error: Could not display report data';
+        }
+           }
+    
+    function getTestSuiteResultDetails() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const testSuiteResultID = urlParams.get('id');
+        const content = document.getElementById('content');
+    if (testSuiteResultID) {
+        let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4 && this.status == 200) {
+                try {
+                    testSuiteResultDetails = JSON.parse(this.response).test_suite_result;
+                    console.log(testSuiteResultDetails)
+                    displayTestSuiteResultDetails(testSuiteResultDetails)
+                } catch (e) {
+                    document.getElementById('content').innerText = 'Error: invalid reponse from the server';
+                }
+            } else if (this.readyState == 4) {
+                document.getElementById('content').innerText = 'An unexpected Server error occured'; 
+            }
+        };
+        xhttp.open("GET", `http://localhost:5000/test_suite_result/load_test_suite_result?test_suite_result_id=${testSuiteResultID}`, true);
+        xhttp.send();
+    } else {
+        content.innerHTML = "<p>Error: Could not get test suite result ID</p>";
+    }
+    }
+
+    function loadPage(page) {
+        window.location.href = page;
+    }
+
+    function backToViewTestSuite() {
+        window.location.href = `viewTestSuites.html?id=${testSuiteResultDetails.test_suite_id}`
+    }
+
+    window.onload = getTestSuiteResultDetails;
+
+        </script>
+    </body>
+</html>

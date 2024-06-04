@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>UniFrame Dashboard</title>
+        <link rel="stylesheet" href="css/UniFrame.css">
+    </head>
+    <body>
+        <div class="toolbar">
+            <span class="logo">UniFrame</span>
+            <ul>
+                <li><a href="#">Notifications</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar">
+            <div class="profile-container">
+                <h5>Luke Millar</h5>
+                <hr>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" onclick="loadPage('dashboard.html');">Dashboard</a></li>
+                <li><a href="#" id="frameworks-link" onclick="loadPage('addFramework.html');">Add New Framework</a></li>
+            </ul>
+
+        </div>
+
+        <div class="content">
+            <div class="content-header">
+                <h2>My Dashboard</h2>
+            </div>
+
+            <div class="stats">
+                <div class="stat">
+                    <span>52</span>
+                    <div>Frameworks</div>
+                </div>
+                <div class="stat">
+                    <span>99</span>
+                    <div>Test Suites</div>
+                </div>
+                <div class="stat">
+                    <span>23</span>
+                    <div>Test Modes</div>
+                </div>
+                <div class="stat">
+                    <span>50</span>
+                    <div>Reports</div>
+                </div>
+                
+            </div>
+
+            <div id="frameworks-container"></div>
+        </div>
+        <script>
+            function displayFrameworks(frameworks) {
+            const outputtext = document.getElementById('frameworks-container');
+            let content = "<h3>Frameworks</h3>";
+            frameworks.forEach(framework => {
+                content += `<div class="framework_details_card"> 
+                    <div class="framework-item" onclick="window.location.href='viewFrameworks.html?id=${framework.framework_id}'" style="cursor: pointer;> <span class="framework-name">${framework.name}</span></div>
+                    </div>`;
+            });
+    
+    outputtext.innerHTML = content;
+    }
+    
+    function getFrameworks() {
+    
+    let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4 && this.status == 200) {
+    
+                try {
+                    var frameworks = JSON.parse(this.response).frameworks;
+                    displayFrameworks(frameworks)
+                } catch (e) {
+                    console.log(e)
+                    document.getElementById('frameworks-container').innerText = 'Error: invalid reponse from the server';
+                }
+            } else if (this.readyState == 4) {
+                document.getElementById('frameworks-container').innerText = 'An unexpected Server error occured';
+              
+            }
+        };
+        xhttp.open("GET", 'http://localhost:5000/framework/load_framework_names', true);
+        xhttp.send();
+    }
+
+    function loadPage(page) {
+        window.location.href = page;
+    }
+
+    window.onload = getFrameworks
+        </script>
+    </body>
+</html>

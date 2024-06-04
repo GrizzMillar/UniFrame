@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>UniFrame Dashboard</title>
+        <style>
+            body, h1, h2, h3, h4, h5, h6 {
+                margin: 0;
+                font-family: 'Raleway', sans-serif;
+            }
+            body {
+                background-color: #f5f5f5;
+            }
+
+            .toolbar {
+                background-color: #0056b3;
+                color: white;
+                padding: 0.5rem 1rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: fixed;
+                width: 100%;
+                top: 0;
+                z-index: 2;
+            }
+
+            .toolbar .logo {
+                font-size:  1.5rem;
+                font-weight: bold;
+                color: white;
+            }
+
+            .toolbar .logo, .toolbar ul {
+                flex: 1;
+                display: flex;
+                align-items: center;
+            }
+
+            .toolbar ul {
+                list-style-type: none;
+                display: flex;
+                padding: 0;
+                margin: 0;
+                justify-content: flex-end;
+                gap: 0.5rem;
+                padding-right: 2rem;
+            }
+
+            .toolbar ul li a {
+                color: white;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+            .sidebar {
+                background-color: #e3f2fd;
+                color: #333;
+                padding: 1rem;
+                padding-top: 60px;
+                height: 100vh;
+                width: 200px;
+                position: fixed;
+                top: 0;
+                left: 0;
+                overflow-y: auto;
+            }
+            .sidebar h5 {
+                margin-bottom: 1rem;
+            }
+            .profile-container h5{
+                margin-bottom: 0.5rem;
+            }
+            hr {
+                border:0;
+                height: 1px;
+                background-color: #ccc;
+                margin-top: 0.5rem;
+                margin-bottom: 1rem;
+            }
+            .sidebar-menu {
+                list-style: none;
+                padding-left: 0;
+                margin-top: 0;
+            }
+            .sidebar-menu li:first-child a {
+                padding-top: 0;
+                margin-top: 0;
+            }
+            .sidebar-menu li a {
+                text-decoration: none;
+                color: #0366d6;
+                padding: 0.5rem 0;
+                display: block;
+            }
+            .sidebar-menu li a.active, .sidebar-menu li a:hover {
+                background-color: #bbdefb;
+            }
+
+            #content {
+                box-sizing: border-box;
+                margin-left: 300px;
+                padding: 1rem;
+                padding-top: 60px;
+                position: relative;
+                z-index: 1;
+            }
+
+            .content-header {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .profile-container {
+                padding-bottom: 1rem;
+            }
+            .sidebar h5 {
+                color: #0366d6;
+                margin-bottom: 0.5rem;
+                font-size: 1.2rem;
+            }
+            hr {
+                border: 0;
+                height: 1px;
+                background-color: #ccc;
+                margin-bottom: 1rem;
+            }
+
+            .test-suite-item {
+                background-color: #ffffff;
+                border: 1px solid #ddd;
+                padding: 0.5rem;
+                margin-bottom: 0.5rem;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                transition: background-color 0.3s ease;
+            }
+
+            .test-suite-item:hover {
+                background-color: #e3f2fd;
+            }
+
+            .test-suite-id, .test-suite-name {
+                margin-right: 1rem;
+            }
+
+
+            .framework-button {
+                padding: 0.3rem 0.6rem;
+                background-color: #2196f3;
+                color: #ffffff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer
+            }
+
+            .framework-button:hover {
+                background-color: #1976d2;
+            }
+
+            .test_mode_details_card {
+                background-color: white;
+                box-shadow: 0 4px 8px rgba(0, 0 ,0, 0.1);
+                border-radius: 8px;
+                padding: 20px;
+                margin-top: 30px;
+                margin-left: 50px;
+                margin-right: 10px;
+                max-width: calc(100% - 270PX);
+                padding-bottom: 40px;
+            }
+
+            .test_mode_title {
+                color: #0056b3;
+                margin-bottom: 20px;
+            }
+            
+            .test_mode_data p {
+                font-size: 16px;
+                margin-bottom: 10px;
+                color: #333;
+            }
+
+            .test_mode_data strong {
+                color: #0056b3;
+                font-weight: 600;
+            }
+
+            .config_form {
+                margin-top: 20px;
+                margin-bottom: 5px;
+            }
+            input[type="text"] {
+                width: 400px;
+            }
+            #description {
+                height: 100px;
+            }
+            textarea {
+                width: 400px;
+                box-sizing: border-box;
+                resize: none;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="toolbar">
+            <span class="logo">UniFrame</span>
+            <ul>
+                <li><a href="#">Notifications</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar">
+            <div class="profile-container">
+                <h5>Luke Millar</h5>
+                <hr>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" onclick="loadPage('dashboard.html');">Back</a></li>
+            </ul>
+
+        </div>
+
+        <div id="content">
+        <main class="container" style="padding: 2rem;">
+            <h2>Add New Framework</h2> 
+            <p>There are a few options for configuring a framework within UniFrame</p>
+            <h4>Upload Configuration File</h4>
+            <input type="file" id="configFile" name="configFile">
+            <button onclick="uploadFile()" style="margin-top: 1rem;">Upload</button>
+            <div id="uploadResponse"></div>
+            <form name="configuration_form">
+                <h4 class="config_form">Configuration Form</h4>
+                <label for="name">Name</label><br>
+                <input type="text" id="name" name="name"><br>
+                <label for="target_directory">Target Directory</label><br>
+                <input type="text" id="target_directory" name="target_directory"><br>
+                <label for="description">Description</label><br>
+                <textarea id="description" name="description" rows="4"></textarea><br>
+                <label for="test_report_directory">Test Report Directory</label><br>
+                <input type="text" id="test_report_directory" name="test_report_directory"><br>
+                <label for="test_report_email">Test Report Email</label><br>
+                <input type="text" id="test_report_email" name="test_report_email"><br>
+                <button onclick="uploadNewFramework()" style="margin-top: 1rem;">Submit</button>
+                <div id="formResponse"></div>
+            </form>
+        </div>
+        <script>
+
+        function uploadNewFramework() {
+            event.preventDefault()
+            let name = document.forms["configuration_form"]["name"].value;
+            let target_directory = document.forms["configuration_form"]["target_directory"].value;
+            let description = document.forms["configuration_form"]["description"].value;
+            let test_report_directory = document.forms["configuration_form"]["test_report_directory"].value;
+            let test_report_email = document.forms["configuration_form"]["test_report_email"].value;
+            fields = [name, target_directory];
+            field_names = ["name", "target directory"]
+            for (let i = 0; i < fields.length; i++) {
+                if (fields[i] == '') {
+                document.getElementById("formResponse").innerText = "Framework configuration failed " + field_names[i] + " is empty!";
+                return false
+                }
+            }
+            const url = 'http://localhost:5000/framework/create_from_form';
+            const data = {
+                name: name,
+                target_directory: target_directory,
+                description: description,
+                test_report_directory: test_report_directory,
+                test_report_email: test_report_email
+            };
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    loadPage('dashboard.html')
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+    }
+
+    function uploadFile() {
+            console.log('framework created!')
+        }
+        async function uploadFile() {
+            const fileInput = document.getElementById('configFile');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                document.getElementById("uploadResponse").innerText = "No file selected!";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('configFile', file);
+
+            try {
+                const response = await fetch('http://localhost:5000/framework/create', {
+                    method: 'POST',
+                    body: formData,
+            });
+
+            if (response.ok) {
+                const result = await response.text();
+                //document.getElementById("uploadResponse").innerText = result;
+                loadPage('dashboard.html')
+            } else {
+                throw new Error('Failed to upload file')
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById("uploadResponse").innerText = "Upload Failed!";
+            
+        }
+    }
+
+    function loadPage(page) {
+        window.location.href = page;
+    }
+
+        </script>
+    </body>
+</html>

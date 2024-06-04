@@ -1,0 +1,12 @@
+<configuration>
+    <test_mode>
+        <framework_name>Bank Application</framework_name>
+        <test_mode_name>Remote</test_mode_name>
+        <host_ip_address>34.147.145.85</host_ip_address>
+        <username>lmillar</username>
+        <rsa_key_path>~/.ssh/id_rsa</rsa_key_path>
+        <test_path>BankApplication</test_path>
+        <requirements_path>requirements.txt</requirements_path>
+        <env_vars>env_var.json</env_vars>
+    </test_mode>
+</configuration>

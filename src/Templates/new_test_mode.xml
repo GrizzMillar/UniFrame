@@ -1,0 +1,12 @@
+<configuration>
+    <test_mode>
+        <framework_name>working</framework_name>
+        <test_mode_name>ButImJustWorking!</test_mode_name>
+        <host_ip_address>This framework will be used to test the danske bank application</host_ip_address>
+        <username>test_current_account.py</username>
+        <rsa_key_path>path</rsa_key_path>
+        <test_path>testpath</test_path>
+        <requirements_path>requirements</requirements_path>
+        <env_vars>variables</env_vars>
+    </test_mode>
+</configuration>

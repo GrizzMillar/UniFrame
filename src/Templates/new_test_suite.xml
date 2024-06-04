@@ -1,0 +1,11 @@
+<configuration>
+    <test_suite>
+        <framework_name>Dankse</framework_name>
+        <test_suite_name></test_suite_name>
+        <test_suite_description>This framework will be used to test the danske bank application</test_suite_description>
+        <test_suite_location>/mnt/c/Users/lukem/OneDrive/Documents/Computer Science Year 4/Computer Science Project/test_framework/test_person.py</test_suite_location>
+        <coverage_files>
+            <file>src/Person.py</file>
+        </coverage_files>
+    </test_suite>
+</configuration>

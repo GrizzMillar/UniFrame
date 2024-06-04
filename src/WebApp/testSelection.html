@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>UniFrame View Frameworks</title>
+        <style>
+            body, h1, h2, h3, h4, h5, h6 {
+                margin: 0;
+                font-family: 'Raleway', sans-serif;
+            }
+            body {
+                background-color: #f5f5f5;
+            }
+
+            .toolbar {
+                background-color: #0056b3;
+                color: white;
+                padding: 0.5rem 1rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: fixed;
+                width: 100%;
+                top: 0;
+                z-index: 2;
+            }
+
+            .toolbar .logo {
+                font-size:  1.5rem;
+                font-weight: bold;
+                color: white;
+            }
+
+            .toolbar .logo, .toolbar ul {
+                flex: 1;
+                display: flex;
+                align-items: center;
+            }
+
+            .toolbar ul {
+                list-style-type: none;
+                display: flex;
+                padding: 0;
+                margin: 0;
+                justify-content: flex-end;
+                gap: 0.5rem;
+                padding-right: 2rem;
+            }
+
+            .toolbar ul li a {
+                color: white;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+            .sidebar {
+                background-color: #e3f2fd;
+                color: #333;
+                padding: 1rem;
+                padding-top: 60px;
+                height: 100vh;
+                width: 200px;
+                position: fixed;
+                top: 0;
+                left: 0;
+                overflow-y: auto;
+            }
+            .sidebar h5 {
+                margin-bottom: 1rem;
+            }
+            .profile-container h5{
+                margin-bottom: 0.5rem;
+            }
+            hr {
+                border:0;
+                height: 1px;
+                background-color: #ccc;
+                margin-top: 0.5rem;
+                margin-bottom: 1rem;
+            }
+            .sidebar-menu {
+                list-style: none;
+                padding-left: 0;
+                margin-top: 0;
+            }
+            .sidebar-menu li:first-child a {
+                padding-top: 0;
+                margin-top: 0;
+            }
+            .sidebar-menu li a {
+                text-decoration: none;
+                color: #0366d6;
+                padding: 0.5rem 0;
+                display: block;
+            }
+            .sidebar-menu li a.active, .sidebar-menu li a:hover {
+                background-color: #bbdefb;
+            }
+
+            #content {
+                box-sizing: border-box;
+                margin-left: 300px;
+                padding: 1rem;
+                padding-top: 60px;
+                position: relative;
+                z-index: 1;
+            }
+
+            .content-header {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .profile-container {
+                padding-bottom: 1rem;
+            }
+            .sidebar h5 {
+                color: #0366d6;
+                margin-bottom: 0.5rem;
+                font-size: 1.2rem;
+            }
+            hr {
+                border: 0;
+                height: 1px;
+                background-color: #ccc;
+                margin-bottom: 1rem;
+            }
+
+            .test-suite-item, .test-mode-item {
+                background-color: #ffffff;
+                border: 1px solid #ddd;
+                padding: 0.5rem;
+                margin-bottom: 0.5rem;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                transition: background-color 0.3s ease;
+            }
+
+            .test-suite-item:hover, .test-mode-item:hover {
+                background-color: #e3f2fd;
+            }
+
+            .test-suite-id, .test-mode-id, .test-suite-name, .test-mode-name {
+                margin-right: 1rem;
+            }
+
+
+            .framework-button {
+                padding: 0.3rem 0.6rem;
+                background-color: #2196f3;
+                color: #ffffff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer
+            }
+
+            .framework-button:hover {
+                background-color: #1976d2;
+            }
+
+            .button, .button:link, .button:visited {
+                padding: 13px 0;
+                border: 1px solid #333;
+                color: #333;
+                font-weight: 700;
+                text-transform: uppercase;
+                font-size: 13px;
+                letter-spacing: 3px;
+                transition: all .2s ease-in-out
+            }
+
+            .button:hover {
+                background: #333;
+                border: 1px solid #333;
+                color: #fefefe;
+                border-radius: 30px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="toolbar">
+            <span class="logo">UniFrame</span>
+            <ul>
+                <li><a href="#">Notifications</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar">
+            <div class="profile-container">
+                <h5>Luke Millar</h5>
+                <hr>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" onclick="loadPage('dashboard.html');">Back</a></li>
+                
+            </ul>
+
+        </div>
+
+        <div id="content">
+    
+        </div>
+        <script>
+            var frameworkDetails = {}
+
+           function displayExecutionSettings() {
+            const test_suites = frameworkDetails.test_suites
+            const test_modes = frameworkDetails.test_modes
+            try {
+            const output = document.getElementById('content');
+            let content = "<h3>Select Test Suites</h3><div>";
+            test_suites.forEach(test_suite => {
+                content += `<input type="checkbox" id="${test_suite.test_suite_name}" value="${test_suite.test_suite_name}"> ${test_suite.test_suite_name}<br>`;
+            });
+            content += `<input type="checkbox" id=test_suites_checkbox value="ALL">ALL<br>`;
+            content += "</div><h3>Select a Test Mode:</h3>";
+            content +="<select name='test_modes' id='test_modes'>";
+            test_modes.forEach(test_mode => {
+                content += `<option value="${test_mode.test_mode_name}">${test_mode.test_mode_name}</option>`;
+            });
+            content += "</select>"
+            content += `<a href="#" class="button" onclick="runTests();">Run Tests</a>`
+            output.innerHTML = content;
+        } catch (e) {
+            document.getElementById('content').innerText = 'Error: Unable to create boxes';
+        }
+
+           }
+
+    function runTests() {
+        const selected_test_suites = [];
+        const test_suites = frameworkDetails.test_suites;
+        test_suites.forEach(test_suite => {
+        let checkbox = document.getElementById(test_suite.test_suite_name)
+            if (checkbox && checkbox.checked) {
+                selected_test_suites.push(test_suite.test_suite_name)
+            }
+        });
+        
+        let allCheckbox = document.getElementById('ALL');
+        if (allCheckbox && allCheckbox.checked) {
+                    selected_test_suites.length = 0;
+                    selected_test_suites.push('ALL')
+                }
+        const test_mode_name = document.getElementById('test_modes').options[document.getElementById('test_modes').selectedIndex].value;
+        const url_query = `test_suite_names=${encodeURIComponent(selected_test_suites.join(','))}&test_mode_name=${encodeURIComponent(test_mode_name)}&framework_name=${encodeURIComponent(frameworkDetails.name)}`;
+        window.location.href=`terminal.html?${url_query}`;
+    }
+    
+    function getFrameworkDetails() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const frameworkID = urlParams.get('id');
+        const content = document.getElementById('content');
+    if (frameworkID) {
+        let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4 && this.status == 200) {
+                try {
+                    frameworkDetails = JSON.parse(this.response).framework;
+                    displayExecutionSettings()
+                } catch (e) {
+                    document.getElementById('content').innerText = 'Error: invalid reponse from the server';
+                }
+            } else if (this.readyState == 4) {
+                document.getElementById('content').innerText = 'An unexpected Server error occured';
+            }
+        };
+        xhttp.open("GET", `http://localhost:5000/framework/load_framework?framework_id=${frameworkID}`, true);
+        xhttp.send();
+    } else {
+        content.innerHTML = "<p>Error: Could not get framework ID</p>";
+    }
+    }
+
+    function loadPage(page) {
+        window.location.href = page;
+    }
+
+    window.onload = getFrameworkDetails;
+        </script>
+    </body>
+</html>

@@ -1,0 +1,10 @@
+<configuration>
+    <test_suite>
+        <framework_name>lukeythree</framework_name>
+        <test_suite_description>This framework will be used to test the danske bank application</test_suite_description>
+        <test_suite_location>test_savings.py</test_suite_location>
+        <coverage_files>
+        <file></file>
+        </coverage_files>
+    </test_suite>
+</configuration>

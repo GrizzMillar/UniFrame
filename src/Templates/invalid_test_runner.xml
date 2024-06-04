@@ -1,0 +1,6 @@
+<configuration>
+    <test_runner>
+        <test_runner_name>test_runner.py</test_runner_name>
+        <test_runner_location>../Templates/test_runner.py</test_runner_location>
+    </test_runner>
+</configuration>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>UniFrame Framework Configuration</title>
+        <link rel="stylesheet" href="css/UniFrame.css">
+        <style>
+
+            .configuration_form h4 {
+                padding-top: 20px;
+                padding-bottom: 15px;
+            }
+            input[type="text"] {
+                width: 400px;
+
+            }
+            #description {
+                height: 100px;
+            }
+            textarea {
+                width: 400px;
+                box-sizing: border-box;
+                resize: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="toolbar">
+            <span class="logo">UniFrame</span>
+            <ul>
+                <li><a href="#">Notifications</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar">
+            <div class="profile-container">
+                <h5>Luke Millar</h5>
+                <hr>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" id="frameworks-link" onclick="backToViewFramework()">Back</a></li>
+            </ul>
+
+        </div>
+
+        <div class="content">
+            <h4>Update through Configuration File (XML)</h4>
+            <input type="file" id="configFile" name="configFile">
+            <button onclick="uploadFile()" style="margin-top: 1rem;">Upload</button>
+            <div id="uploadResponse"></div>
+            <div class="configuration_form">
+            <h4>Configuration Form</h4>
+            <form name="configuration_form">
+                <label for="name">Name</label><br>
+                <input type="text" id="name" name="name"><br>
+                <label for="description">Description</label><br>
+                <textarea id="description" name="description" rows="4"></textarea><br>
+                <label for="test_report_directory">Test Report Directory</label><br>
+                <input type="text" id="test_report_directory" name="test_report_directory"><br>
+                <label for="test_report_email">Email for Test Reports</label><br>
+                <input type="text" id="test_report_email" name="test_report_email"><br>
+                <button onclick="updateConfiguration()" style="margin-top: 1rem;">save</button>
+            </form>
+            </div>
+
+        </div>
+        <script>
+    
+    function populateForm(framework) {
+        document.getElementById('name').value = framework.name;
+        document.getElementById('description').value = framework.description;
+        document.getElementById('test_report_directory').value = framework.test_report_directory;
+        document.getElementById('test_report_email').value = framework.test_report_email;
+    }
+    function getFrameworkDetails() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const frameworkID = urlParams.get('id');
+        const content = document.getElementById('content');
+    if (frameworkID) {
+        let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4 && this.status == 200) {
+                try {
+                    frameworkDetails = JSON.parse(this.response).framework;
+                    populateForm(frameworkDetails);
+                } catch (e) {
+                    document.getElementById('content').innerText = 'Error: invalid reponse from the server';
+                }
+            } else if (this.readyState == 4) {
+                document.getElementById('content').innerText = 'An unexpected Server error occured';
+            }
+        };
+        xhttp.open("GET", `http://localhost:5000/framework/load_framework?framework_id=${frameworkID}`, true);
+        xhttp.send();
+    } else {
+        content.innerHTML = "<p>Error: Could not get framework ID</p>";
+    }
+    }
+
+    function uploadFile() {
+            document.getElementById("uploadResponse").innerText = "Framework updated!";
+        }
+        async function uploadFile() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const frameworkID = urlParams.get('id');
+            const fileInput = document.getElementById('configFile');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                document.getElementById("uploadResponse").innerText = "No file selected!";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('configFile', file);
+            formData.append('framework_id', frameworkID);
+
+            try {
+                const response = await fetch(`http://localhost:5000/framework/update`, {
+                    method: 'POST',
+                    body: formData,
+            });
+
+            if (response.ok) {
+                const result = await response.text();
+                //document.getElementById("uploadResponse").innerText = result;
+                backToViewFramework()
+            } else {
+                throw new Error('Failed to upload file')
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById("uploadResponse").innerText = "Upload Failed!";
+ 
+        }
+    }
+
+    function updateConfiguration() {
+            event.preventDefault()
+            const urlParams = new URLSearchParams(window.location.search);
+            const frameworkID = urlParams.get('id');
+            let name = document.forms["configuration_form"]["name"].value;
+            let description = document.forms["configuration_form"]["description"].value;
+            let test_report_directory = document.forms["configuration_form"]["test_report_directory"].value;
+            let test_report_email = document.forms["configuration_form"]["test_report_email"].value;
+            
+            const url = 'http://localhost:5000/framework/update';
+            const data = {
+                framework_id: frameworkID,
+                name: name,
+                description: description,
+                test_report_directory: test_report_directory,
+                test_report_email: test_report_email
+            };
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    backToViewFramework()
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+    }
+
+    function backToViewFramework() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const frameworkID = urlParams.get('id');
+        window.location.href=`viewFrameworks.html?id=${frameworkID}`
+
+    }
+
+    window.onload = getFrameworkDetails
+
+        </script>
+    </body>
+</html>

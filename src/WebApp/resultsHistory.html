@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>UniFrame View Frameworks</title>
+        <style>
+            body, h1, h2, h3, h4, h5, h6 {
+                margin: 0;
+                font-family: 'Raleway', sans-serif;
+            }
+            body {
+                background-color: #f5f5f5;
+            }
+
+            .toolbar {
+                background-color: #0056b3;
+                color: white;
+                padding: 0.5rem 1rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: fixed;
+                width: 100%;
+                top: 0;
+                z-index: 2;
+            }
+
+            .toolbar .logo {
+                font-size:  1.5rem;
+                font-weight: bold;
+                color: white;
+            }
+
+            .toolbar .logo, .toolbar ul {
+                flex: 1;
+                display: flex;
+                align-items: center;
+            }
+
+            .toolbar ul {
+                list-style-type: none;
+                display: flex;
+                padding: 0;
+                margin: 0;
+                justify-content: flex-end;
+                gap: 0.5rem;
+                padding-right: 2rem;
+            }
+
+            .toolbar ul li a {
+                color: white;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+            .sidebar {
+                background-color: #e3f2fd;
+                color: #333;
+                padding: 1rem;
+                padding-top: 60px;
+                height: 100vh;
+                width: 200px;
+                position: fixed;
+                top: 0;
+                left: 0;
+                overflow-y: auto;
+            }
+            .sidebar h5 {
+                margin-bottom: 1rem;
+            }
+            .profile-container h5{
+                margin-bottom: 0.5rem;
+            }
+            hr {
+                border:0;
+                height: 1px;
+                background-color: #ccc;
+                margin-top: 0.5rem;
+                margin-bottom: 1rem;
+            }
+            .sidebar-menu {
+                list-style: none;
+                padding-left: 0;
+                margin-top: 0;
+            }
+            .sidebar-menu li:first-child a {
+                padding-top: 0;
+                margin-top: 0;
+            }
+            .sidebar-menu li a {
+                text-decoration: none;
+                color: #0366d6;
+                padding: 0.5rem 0;
+                display: block;
+            }
+            .sidebar-menu li a.active, .sidebar-menu li a:hover {
+                background-color: #bbdefb;
+            }
+
+            #content {
+                box-sizing: border-box;
+                margin-left: 300px;
+                padding: 1rem;
+                padding-top: 60px;
+                position: relative;
+                z-index: 1;
+            }
+
+            .content-header {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .profile-container {
+                padding-bottom: 1rem;
+            }
+            .sidebar h5 {
+                color: #0366d6;
+                margin-bottom: 0.5rem;
+                font-size: 1.2rem;
+            }
+            hr {
+                border: 0;
+                height: 1px;
+                background-color: #ccc;
+                margin-bottom: 1rem;
+            }
+
+            .test-suite-item, .test-mode-item {
+                background-color: #ffffff;
+                border: 1px solid #ddd;
+                padding: 0.5rem;
+                margin-bottom: 0.5rem;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                transition: background-color 0.3s ease;
+            }
+
+            .test-suite-item:hover, .test-mode-item:hover {
+                background-color: #e3f2fd;
+            }
+
+            .test-suite-id, .test-mode-id, .test-suite-name, .test-mode-name {
+                margin-right: 1rem;
+            }
+
+
+            .framework-button {
+                padding: 0.3rem 0.6rem;
+                background-color: #2196f3;
+                color: #ffffff;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer
+            }
+
+            .framework-button:hover {
+                background-color: #1976d2;
+            }
+            
+            .framework_details_card {
+                background-color: white;
+                box-shadow: 0 4px 8px rgba(0, 0 ,0, 0.1);
+                border-radius: 8px;
+                padding: 20px;
+                margin-top: 30px;
+                margin-left: 50px;
+                margin-right: 10px;
+                max-width: calc(100% - 270PX);
+                padding-bottom: 40px;
+            }
+
+            .framework_tite {
+                color: #0056b3;
+                margin-bottom: 20px;
+            }
+            
+            .framework_data p {
+                font-size: 16px;
+                margin-bottom: 10px;
+                color: #333;
+            }
+
+            .framework_data strong {
+                color: #0056b3;
+                font-weight: 600;
+            }
+
+            .framework_diagram {
+                position: relative;
+                padding-top: 50px;
+            }
+
+            .framework_diagram_name {
+                text-align: center;
+                background-color: #e3f2fd;
+                border: 1px solid #bbb;
+                padding: 10px;
+                border-radius: 4px;
+                position: relative;
+                margin-bottom: 30px;
+                margin-left: 600px;
+                width: 25%;
+            }
+
+            .framework_diagram_name::after {
+                content: '';
+                position: absolute;
+                left: 50%;
+                bottom: -30px;
+                width: 2px;
+                height: 30px;
+                background-color: #bbb;
+                transform: translateX(-50%);
+            }
+
+            .test_modes_diagram_name {
+                text-align: center;
+                background-color: #e3f2fd;
+                border: 1px solid #bbb;
+                padding: 10px;
+                border-radius: 4px;
+                position: relative;
+                margin-bottom: 30px;
+                margin-left: 719px;
+                width: 10%;
+            }
+
+            .test_modes_diagram_name::after {
+                content: '';
+                position: absolute;
+                left: 50%;
+                bottom: -30px;
+                width: 2px;
+                height: 30px;
+                background-color: #bbb;
+                transform: translateX(-50%);
+            }
+
+            .test_suites_diagram_name {
+                text-align: center;
+                background-color: #e3f2fd;
+                border: 1px solid #bbb;
+                padding: 10px;
+                border-radius: 4px;
+                position: relative;
+                margin-bottom: 30px;
+                margin-left: 719px;
+                width: 10%;
+            }
+
+            .test_suites_diagram_name::after {
+                content: '';
+                position: absolute;
+                left: 50%;
+                bottom: -30px;
+                width: 2px;
+                height: 30px;
+                background-color: #bbb;
+                transform: translateX(-50%);
+            }
+
+            .framework_components {
+                position: relative;
+                margin-top: 20px;
+            }
+
+            .framework_components::before { /*This Is the first Line*/
+                content: '';
+                position: absolute;
+                top: -3px;
+                left: 50%;
+                width: 65%;
+                height: 2px;
+                background-color: #bbb;
+                transform: translateX(-50%);
+
+            }
+
+            .test_modes, .test_suites {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                position: relative;
+            }
+
+            .test_suites::before { 
+                content: '';
+                position: absolute;
+                top: -1px;
+                left: 50%;
+                width: 65%;
+                height: 2px;
+                background-color: #bbb;
+                transform: translateX(-50%);
+
+            }
+
+            .test_mode_name, .test_suite_name {
+                background-color: #f5f5f5;
+                border: 1px solid #bbb;
+                padding: 10px;
+                border-radius: 4px;
+                position: relative;
+                margin-top: 28px;
+                margin-bottom: 30px;
+            }
+
+            .test_suite_name {
+                left: 24%
+            }
+
+            .test_mode_name::after {
+                content: '';
+                position: absolute;
+                left: 50%;
+                bottom: 38px;
+                width: 2px;
+                height: 30px;
+                background-color: #bbb;
+                transform: translateX(-50%);
+            }
+
+            .test_suite_name::after {
+                content: '';
+                position: absolute;
+                left: 50%;
+                bottom: 38px;
+                width: 2px;
+                height: 30px;
+                background-color: #bbb;
+                transform: translateX(-50%);
+            }
+
+            .test_suites {
+                flex-wrap: wrap;
+                justify-content: flex-start;
+            }
+
+            .results_details_card {
+                background-color: white;
+                box-shadow: 0 4px 8px rgba(0, 0 ,0, 0.1);
+                border-radius: 8px;
+                padding: 10px;
+                margin-top: 5px;
+                margin-left: 0px;
+                margin-right: 10px;
+                max-width: calc(100% - 100PX);
+                padding-bottom: 10px;
+            }
+
+
+        </style>
+    </head>
+    <body>
+        <div class="toolbar">
+            <span class="logo">UniFrame</span>
+            <ul>
+                <li><a href="#">Notifications</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar">
+            <div class="profile-container">
+                <h5>Luke Millar</h5>
+                <hr>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" onclick="loadPage('dashboard.html');">Dashboard</a></li>
+                <li><a href="#" id="testsuites-link" onclick="displayTestSuites(); return false">Test Suites</a></li>
+                <li><a href="#" id="testmodes-link" onclick="displayTestModes(); return false">Test Modes</a></li>
+                <li><a href="#" id="results-link" onclick="displayResults()">Results</a></li>
+                <li><a href="#">Configuration</a></li>
+                <li><a href="#" id="results-link" onclick="loadTestSelection()">Run</a></li>
+            </ul>
+
+        </div>
+
+        <div id="content">
+    
+        </div>
+        <script>
+            var frameworkDetails = {}
+
+           function displayResults() {
+            results = frameworkDetails.results
+            const output = document.getElementById('content');
+            let content = "<h3>Results History:</h3>";
+            results.forEach(result => {
+                content += `<div class="results_details_card"> 
+                    <div class="test-mode-item" onclick="window.location.href='viewReport.html?id=${result.report_id}'" style="cursor: pointer;"> <span>ID: ${result.report_id}</span> <span>Date: ${result.date}</span></div>
+                    </div>`;
+            });
+
+            output.innerHTML = content;
+           }
+    
+    function getFrameworkDetails() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const frameworkID = urlParams.get('id');
+        const content = document.getElementById('content');
+    if (frameworkID) {
+        let xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4 && this.status == 200) {
+                try {
+                    frameworkDetails = JSON.parse(this.response).framework;
+                    displayFrameworkDetails(frameworkDetails)
+                } catch (e) {
+                    document.getElementById('content').innerText = 'Error: invalid reponse from the server';
+                }
+            } else if (this.readyState == 4) {
+                document.getElementById('content').innerText = 'An unexpected Server error occured';
+            }
+        };
+        xhttp.open("GET", `http://localhost:5000/framework/load_framework?framework_id=${frameworkID}`, true);
+        xhttp.send();
+    } else {
+        content.innerHTML = "<p>Error: Could not get framework ID</p>";
+    }
+    }
+
+    function loadPage(page) {
+        window.location.href = page;
+    }
+
+    function loadTestSelection() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const frameworkID = urlParams.get('id');
+        const content = document.getElementById('content');
+        if (frameworkID) {
+            window.location.href = `testSelection.html?id=${frameworkID}`;
+        } else {
+            content.innerHTML = "<p>Error: Could not find framework ID</p>";
+        }
+    
+    }
+
+    window.onload = getFrameworkDetails;
+        </script>
+    </body>
+</html>
